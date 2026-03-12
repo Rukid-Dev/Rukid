@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
 </head>
 <body>
-
+<form id="contactForm" action="https://formspree.io/f/xvzwrkqk" method="POST"></form>
   <!-- NAVBAR -->
   <nav class="navbar" id="navbar">
     <div class="nav-container">
@@ -214,7 +214,7 @@
   </section>
 
   <!-- CONTACT -->
- <section class="section" id="contact">
+<section class="section" id="contact">
   <div class="container">
     <div class="section-header">
       <h2><span class="num">05.</span> Comm_Link</h2>
@@ -247,7 +247,7 @@
         </a>
       </div>
       <div class="contact-form reveal">
-        <form id="contactForm">
+        <form id="contactForm" action="https://formspree.io/f/xvzwrkqk" method="POST">
           <h3>Send_Data_Packet</h3>
           <div class="form-group">
             <label>NAME_IDENTIFIER</label>
@@ -262,7 +262,7 @@
             <textarea name="message" rows="4" placeholder="Type message here..." required></textarea>
           </div>
           <button type="submit" class="btn btn-primary btn-full" id="submitBtn">TRANSMIT</button>
-          <div id="formStatus" style="margin-top:12px; font-size:0.9rem;"></div>
+          <div id="formStatus" style="margin-top:12px; font-size:0.9rem; min-height: 20px;"></div>
         </form>
       </div>
     </div>
@@ -364,40 +364,55 @@
       e.target.reset();
     });
   </script>
-  <script>
-  const form = document.getElementById('contactForm');
-  const status = document.getElementById('formStatus');
-  const submitBtn = document.getElementById('submitBtn');
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('contactForm');
+    const status = document.getElementById('formStatus');
+    const submitBtn = document.getElementById('submitBtn');
 
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'TRANSMITTING...';
-
-    const data = new FormData(form);
-
-    try {
-      const res = await fetch('https://formspree.io/f/xvzwrkqk', {
-        method: 'POST',
-        body: data,
-        headers: { 'Accept': 'application/json' }
-      });
-
-      if (res.ok) {
-        status.style.color = '#00ff88';
-        status.textContent = '✓ Transmission successful. Message received.';
-        form.reset();
-      } else {
-        throw new Error();
-      }
-    } catch {
-      status.style.color = '#ff4466';
-      status.textContent = '✗ Transmission failed. Try again.';
-    } finally {
-      submitBtn.disabled = false;
-      submitBtn.textContent = 'TRANSMIT';
+    if (!form) {
+        console.error("Form bulunamadı!");
+        return;
     }
-  });
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'TRANSMITTING...';
+        status.textContent = 'Sending...';
+
+        // Form verilerini al
+        const data = new FormData(form);
+
+        try {
+            const response = await fetch(form.action, {
+                method: form.method,
+                body: data, // Veriyi ham FormData olarak gönderiyoruz
+                headers: {
+                    'Accept': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                status.style.color = '#00ff88';
+                status.textContent = '✓ Transmission successful.';
+                form.reset();
+            } else {
+                const result = await response.json();
+                status.style.color = '#ff4466';
+                status.textContent = '✗ Error: ' + (result.errors ? result.errors[0].message : 'Submission failed');
+            }
+        } catch (error) {
+            status.style.color = '#ff4466';
+            status.textContent = '✗ Connection error.';
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'TRANSMIT';
+        }
+    });
+});
 </script>
+
 </body>
 </html>
