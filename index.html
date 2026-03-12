@@ -214,59 +214,60 @@
   </section>
 
   <!-- CONTACT -->
-  <section class="section" id="contact">
-    <div class="container">
-      <div class="section-header">
-        <h2><span class="num">05.</span> Comm_Link</h2>
-        <div class="section-line"></div>
-        <p class="section-sub">Transmission channels are open. Drop a message to discuss projects, gaming, or general coding queries.</p>
+ <section class="section" id="contact">
+  <div class="container">
+    <div class="section-header">
+      <h2><span class="num">05.</span> Comm_Link</h2>
+      <div class="section-line"></div>
+      <p class="section-sub">Transmission channels are open. Drop a message to discuss projects, gaming, or general coding queries.</p>
+    </div>
+    <div class="contact-grid">
+      <div class="contact-links reveal">
+        <h3>Direct_Pings</h3>
+        <a href="mailto:ruhid4406@gmail.com" class="contact-item">
+          <div class="contact-icon">&#9993;</div>
+          <div>
+            <div class="contact-label">EMAIL</div>
+            <div class="contact-value">ruhid4406@gmail.com</div>
+          </div>
+        </a>
+        <a href="https://github.com/Rukid-Dev" target="_blank" class="contact-item pink-hover">
+          <div class="contact-icon">&#128025;</div>
+          <div>
+            <div class="contact-label">GITHUB</div>
+            <div class="contact-value">github.com/Rukid-Dev</div>
+          </div>
+        </a>
+        <a href="https://github.com/Rukid-Dev?tab=repositories" target="_blank" class="contact-item purple-hover">
+          <div class="contact-icon">&#128196;</div>
+          <div>
+            <div class="contact-label">PROJECTS</div>
+            <div class="contact-value">View all on GitHub</div>
+          </div>
+        </a>
       </div>
-      <div class="contact-grid">
-        <div class="contact-links reveal">
-          <h3>Direct_Pings</h3>
-          <a href="mailto:ruhid4406@gmail.com" class="contact-item">
-            <div class="contact-icon">&#9993;</div>
-            <div>
-              <div class="contact-label">EMAIL</div>
-              <div class="contact-value">ruhid4406@gmail.com</div>
-            </div>
-          </a>
-          <a href="https://github.com/Rukid-Dev" target="_blank" class="contact-item pink-hover">
-            <div class="contact-icon">&#128025;</div>
-            <div>
-              <div class="contact-label">GITHUB</div>
-              <div class="contact-value">github.com/Rukid-Dev</div>
-            </div>
-          </a>
-          <a href="https://github.com/Rukid-Dev?tab=repositories" target="_blank" class="contact-item purple-hover">
-            <div class="contact-icon">&#128196;</div>
-            <div>
-              <div class="contact-label">PROJECTS</div>
-              <div class="contact-value">View all on GitHub</div>
-            </div>
-          </a>
-        </div>
-        <div class="contact-form reveal">
-          <form id="contactForm">
-            <h3>Send_Data_Packet</h3>
-            <div class="form-group">
-              <label>NAME_IDENTIFIER</label>
-              <input type="text" placeholder="Enter name..." required />
-            </div>
-            <div class="form-group">
-              <label>RETURN_ADDRESS</label>
-              <input type="email" placeholder="Enter email..." required />
-            </div>
-            <div class="form-group">
-              <label>PAYLOAD</label>
-              <textarea rows="4" placeholder="Type message here..." required></textarea>
-            </div>
-            <button type="submit" class="btn btn-primary btn-full">TRANSMIT</button>
-          </form>
-        </div>
+      <div class="contact-form reveal">
+        <form id="contactForm">
+          <h3>Send_Data_Packet</h3>
+          <div class="form-group">
+            <label>NAME_IDENTIFIER</label>
+            <input type="text" name="name" placeholder="Enter name..." required />
+          </div>
+          <div class="form-group">
+            <label>RETURN_ADDRESS</label>
+            <input type="email" name="email" placeholder="Enter email..." required />
+          </div>
+          <div class="form-group">
+            <label>PAYLOAD</label>
+            <textarea name="message" rows="4" placeholder="Type message here..." required></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary btn-full" id="submitBtn">TRANSMIT</button>
+          <div id="formStatus" style="margin-top:12px; font-size:0.9rem;"></div>
+        </form>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
   <!-- FOOTER -->
   <footer class="footer">
@@ -363,5 +364,40 @@
       e.target.reset();
     });
   </script>
+  <script>
+  const form = document.getElementById('contactForm');
+  const status = document.getElementById('formStatus');
+  const submitBtn = document.getElementById('submitBtn');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'TRANSMITTING...';
+
+    const data = new FormData(form);
+
+    try {
+      const res = await fetch('https://formspree.io/f/xvzwrkqk', {
+        method: 'POST',
+        body: data,
+        headers: { 'Accept': 'application/json' }
+      });
+
+      if (res.ok) {
+        status.style.color = '#00ff88';
+        status.textContent = '✓ Transmission successful. Message received.';
+        form.reset();
+      } else {
+        throw new Error();
+      }
+    } catch {
+      status.style.color = '#ff4466';
+      status.textContent = '✗ Transmission failed. Try again.';
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'TRANSMIT';
+    }
+  });
+</script>
 </body>
 </html>
